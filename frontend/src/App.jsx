@@ -7,6 +7,7 @@ function App() {
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isRegister, setIsRegister] = useState(false);
 
   const API = "/tasks";
 
@@ -32,6 +33,16 @@ function App() {
     const data = await res.json();
     localStorage.setItem("token", data.token);
     setToken(data.token);
+  };
+
+  const register = async () => {
+    await fetch("/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+
+    setIsRegister(false);
   };
 
   const addTask = async () => {
@@ -84,7 +95,8 @@ function App() {
     return (
       <div style={styles.center}>
         <div style={styles.card}>
-          <h2>Login</h2>
+          <h2>{isRegister ? "Register" : "Login"}</h2>
+
           <input
             style={styles.input}
             placeholder="Email"
@@ -96,7 +108,25 @@ function App() {
             type="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button style={styles.button} onClick={login}>Login</button>
+
+          {isRegister ? (
+            <button style={styles.button} onClick={register}>
+              Register
+            </button>
+          ) : (
+            <button style={styles.button} onClick={login}>
+              Login
+            </button>
+          )}
+
+          <p
+            style={{ marginTop: 10, cursor: "pointer" }}
+            onClick={() => setIsRegister(!isRegister)}
+          >
+            {isRegister
+              ? "Already have account? Login"
+              : "No account? Register"}
+          </p>
         </div>
       </div>
     );
