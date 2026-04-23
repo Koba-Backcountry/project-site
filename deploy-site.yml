@@ -1,0 +1,72 @@
+---
+- hosts: ec2
+  become: yes
+
+  vars:
+    repo_url: "https://github.com/Koba-Backcountry/project-site.git"
+    site_dir: "/home/ubuntu/project"
+    ansible_ssh_common_args: '-o ServerAliveInterval=60 -o ServerAliveCountMax=10'
+
+  tasks:
+    - name: Install packages
+      apt:
+        name:
+          - docker.io
+          - docker-compose
+          - git
+        state: present
+        update_cache: yes
+
+    - name: Ensure docker service is enabled and started
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Ensure docker group exists
+      group:
+        name: docker
+        state: present
+
+    - name: Add ubuntu to docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Reset SSH connection
+      meta: reset_connection
+
+    - name: Configure git safe directory
+      become_user: ubuntu
+      command: git config --global --add safe.directory {{ site_dir }}
+
+    - name: Ensure project directory exists
+      file:
+        path: "{{ site_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+        mode: '0755'
+
+    - name: Clone or update repo
+      become_user: ubuntu
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ site_dir }}"
+        version: main
+        force: yes
+
+    - name: Fix repo ownership
+      file:
+        path: "{{ site_dir }}"
+        owner: ubuntu
+        group: ubuntu
+        recurse: yes
+
+    - name: Run docker compose (force clean)
+      shell: |
+        cd {{ site_dir }}
+        cat docker-compose.yml
+        docker-compose down || true
+        docker-compose up -d --build
