@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
+  const [editId, setEditId] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,14 +37,26 @@ function App() {
   const addTask = async () => {
     if (!title) return;
 
-    await fetch(API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + token
-      },
-      body: JSON.stringify({ title })
-    });
+    if (editId) {
+      await fetch(`${API}/${editId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ title })
+      });
+      setEditId(null);
+    } else {
+      await fetch(API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ title })
+      });
+    }
 
     setTitle("");
     loadTasks();
@@ -55,6 +68,11 @@ function App() {
       headers: { Authorization: "Bearer " + token }
     });
     loadTasks();
+  };
+
+  const editTask = (task) => {
+    setTitle(task.title);
+    setEditId(task.id);
   };
 
   const logout = () => {
@@ -98,16 +116,21 @@ function App() {
           onChange={(e) => setTitle(e.target.value)}
           placeholder="New task..."
         />
-        <button style={styles.button} onClick={addTask}>Add Task</button>
+        <button style={styles.button} onClick={addTask}>
+          {editId ? "Update Task" : "Add Task"}
+        </button>
       </div>
 
       <div style={styles.list}>
         {tasks.map((t) => (
           <div key={t.id} style={styles.task}>
             <span>{t.title}</span>
-            <button style={styles.delete} onClick={() => deleteTask(t.id)}>
-              Delete
-            </button>
+            <div>
+              <button onClick={() => editTask(t)}>Edit</button>
+              <button style={styles.delete} onClick={() => deleteTask(t.id)}>
+                Delete
+              </button>
+            </div>
           </div>
         ))}
       </div>
