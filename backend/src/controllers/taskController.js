@@ -1,9 +1,10 @@
 const prisma = require("../config/db");
 
-// GET all
+// GET all (only user tasks)
 exports.getTasks = async (req, res) => {
   try {
     const tasks = await prisma.task.findMany({
+      where: { userId: req.user.userId },
       orderBy: { id: "desc" }
     });
     res.json(tasks);
@@ -19,7 +20,7 @@ exports.createTask = async (req, res) => {
   if (!title) return res.status(400).json({ error: "Title required" });
 
   const task = await prisma.task.create({
-    data: { title }
+    data: { title, userId: req.user.userId }
   });
 
   res.json(task);
