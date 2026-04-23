@@ -39,7 +39,7 @@ function App() {
 
   return (
     <div style={{ padding: 20, fontFamily: "Arial" }}>
-      <h1>Task Tracker - GitHub Actions version</h1>
+      <h1>Task Tracker</h1>
 
       <div style={{ marginBottom: 20 }}>
         <input
