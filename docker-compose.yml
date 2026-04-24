@@ -17,6 +17,7 @@ services:
     build: ./backend
     container_name: backend
     hostname: backend
+    restart: always
     ports:
       - "3000:3000"
     depends_on:
@@ -31,6 +32,7 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+    restart: always
     ports:
       - "80:80"
     depends_on:
