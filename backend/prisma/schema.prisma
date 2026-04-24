@@ -8,10 +8,11 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
   password String
   tasks    Task[]
+  habits   Habit[]
 }
 
 model Task {
@@ -19,4 +20,20 @@ model Task {
   title   String
   userId  Int
   user    User   @relation(fields: [userId], references: [id])
+}
+
+model Habit {
+  id        Int      @id @default(autoincrement())
+  title     String
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  logs      HabitLog[]
+}
+
+model HabitLog {
+  id       Int      @id @default(autoincrement())
+  habitId  Int
+  habit    Habit    @relation(fields: [habitId], references: [id])
+  date     DateTime
 }
