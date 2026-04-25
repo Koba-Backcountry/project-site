@@ -7,5 +7,6 @@ router.get("/", auth, habitController.getHabits);
 router.post("/", auth, habitController.createHabit);
 router.post("/:id/check", auth, habitController.checkHabit);
 router.delete("/:id", auth, habitController.deleteHabit);
+router.get("/stats", auth, habitController.getStats);
 
 module.exports = router;

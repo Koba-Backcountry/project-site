@@ -51,3 +51,18 @@ exports.deleteHabit = async (req, res) => {
 
   res.json({ success: true });
 };
+
+// Progress statistics (charts)
+exports.getStats = async (req, res) => {
+  const habits = await prisma.habit.findMany({
+    where: { userId: req.user.userId },
+    include: { logs: true }
+  });
+
+  const stats = habits.map(h => ({
+    title: h.title,
+    totalChecks: h.logs.length
+  }));
+
+  res.json(stats);
+};
