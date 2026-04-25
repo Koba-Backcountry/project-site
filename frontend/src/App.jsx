@@ -9,8 +9,13 @@ function App() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
+  const [theme, setTheme] = useState("dark");
 
   const API = "/tasks";
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   useEffect(() => {
     if (token) {
@@ -149,6 +154,9 @@ function App() {
       <div style={styles.header}>
         <h1>Task Tracker</h1>
         <button style={styles.logout} onClick={logout}>Logout</button>
+        <button onClick={toggleTheme}>
+          {theme === "dark" ? "Light Mode" : "Dark Mode"}
+        </button>
       </div>
 
       <div style={styles.card}>
@@ -199,9 +207,9 @@ const styles = {
   },
   container: {
     padding: 20,
-    background: "#0f172a",
     minHeight: "100vh",
-    color: "#fff"
+    color: theme === "dark" ? "#fff" : "#000",
+    background: theme === "dark" ? "#0f172a" : "#f1f5f9"
   },
   header: {
     display: "flex",
