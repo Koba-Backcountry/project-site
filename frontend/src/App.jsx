@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [tasks, setTasks] = useState([]);
+  const [stats, setStats] = useState([]);
   const [title, setTitle] = useState("");
   const [editId, setEditId] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || "");
@@ -12,7 +13,10 @@ function App() {
   const API = "/tasks";
 
   useEffect(() => {
-    if (token) loadTasks();
+    if (token) {
+      loadTasks();
+      loadStats();
+    }
   }, [token]);
 
   const loadTasks = async () => {
@@ -21,6 +25,14 @@ function App() {
     });
     const data = await res.json();
     setTasks(data);
+  };
+
+  const loadStats = async () => {
+    const res = await fetch("/habits/stats", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+    setStats(data);
   };
 
   const login = async () => {
@@ -149,6 +161,15 @@ function App() {
         <button style={styles.button} onClick={addTask}>
           {editId ? "Update Task" : "Add Task"}
         </button>
+      </div>
+
+      <div style={styles.card}>
+        <h2>Habit Stats</h2>
+        {stats.map((s, i) => (
+          <div key={i}>
+            {s.title} — {s.totalChecks} days
+          </div>
+        ))}
       </div>
 
       <div style={styles.list}>
