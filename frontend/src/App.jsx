@@ -10,6 +10,7 @@ function App() {
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [theme, setTheme] = useState("dark");
+  const styles = getStyles(theme);
 
   const API = "/tasks";
 
@@ -197,13 +198,13 @@ function App() {
   );
 }
 
-const styles = {
+const getStyles = (theme) => ({
   center: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
-    background: "#0f172a"
+    background: theme === "dark" ? "#0f172a" : "#f1f5f9"
   },
   container: {
     padding: 20,
@@ -217,7 +218,7 @@ const styles = {
     alignItems: "center"
   },
   card: {
-    background: "#1e293b",
+    background: theme === "dark" ? "#1e293b" : "#ffffff",
     padding: 20,
     borderRadius: 10,
     marginTop: 20
@@ -251,7 +252,7 @@ const styles = {
   task: {
     display: "flex",
     justifyContent: "space-between",
-    background: "#334155",
+    background: theme === "dark" ? "#334155" : "#e2e8f0",
     padding: 10,
     borderRadius: 5,
     marginBottom: 10
@@ -263,6 +264,6 @@ const styles = {
     borderRadius: 5,
     cursor: "pointer"
   }
-};
+});
 
 export default App;
